@@ -6,6 +6,7 @@ function Preview() {
   const previewRef = useRef<HTMLDivElement>(null);  // Create a reference to the Preview component
 
   const generatePDF = async () => {
+    if (!previewRef.current) return;
     const htmlContent = previewRef.current.innerHTML;
   
     const response = await fetch("/api/generateResume", {
