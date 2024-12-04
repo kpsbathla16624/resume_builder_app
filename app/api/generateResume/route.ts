@@ -3,27 +3,27 @@ import { v2 as cloudinary } from 'cloudinary';
 import puppeteer from 'puppeteer';
 
 // Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
-});
 
 export async function POST(req: NextRequest) {
-  const { htmlContent } = await req.json();  // Parse the incoming JSON body
-
-  try {
-    // Generate PDF from HTML content using Puppeteer
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
-    await browser.close();
-
-    // Create a promise that resolves when the PDF is uploaded to Cloudinary
-    const uploadPromise = new Promise<NextResponse>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { resource_type: 'raw'  },
+    const { htmlContent } = await req.json();  // Parse the incoming JSON body
+    
+    try {
+        // Generate PDF from HTML content using Puppeteer
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(htmlContent);
+        const pdfBuffer = await page.pdf({ format: 'A4' });
+        await browser.close();
+        
+        cloudinary.config({
+          cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+          api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
+        });
+        // Create a promise that resolves when the PDF is uploaded to Cloudinary
+        const uploadPromise = new Promise<NextResponse>((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { resource_type: 'raw'  },
         (error, result) => {
           if (error) {
             console.error('Error uploading PDF to Cloudinary:', error);
