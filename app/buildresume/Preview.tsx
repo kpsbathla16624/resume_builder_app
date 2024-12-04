@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useResumeContext } from "../context/appContext";
-import { saveAs } from 'file-saver';
+import { jsPDF } from "jspdf";
 
 function Preview() {
   const { resume } = useResumeContext();
@@ -11,36 +11,32 @@ function Preview() {
     if (!previewRef.current) return;
 
     setLoading(true);  // Set loading state to true when the process starts
-    
-    const htmlContent = previewRef.current.innerHTML;
 
-    // Send the HTML content to the server to generate the PDF
-    const response = await fetch("/api/generateResume", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ htmlContent }),
-    });
+    try {
+      const doc = new jsPDF({
+        unit: "mm",        // Unit of measurement for the page (mm, cm, etc.)
+        format: "a4",      // Set the page size to A4
+      });
 
-    // Get the URL of the uploaded PDF from the server
-    const { downloadUrl } = await response.json();
-
-    // If the server returns a URL pointing to the hosted file, download it with FileSaver.js
-    if (downloadUrl) {
-      // Create a temporary request to fetch the file as a Blob
-      fetch(downloadUrl)
-        .then((res) => res.blob())  // Convert the response into a Blob (binary large object)
-        .then((blob) => {
-          // Use FileSaver.js to save the file, specifying the file name and extension
-          const fileName = 'resume.pdf';
-          saveAs(blob, fileName);  // FileSaver.js triggers the download
+      // Use jsPDF's `html` method to convert HTML content to PDF
+      doc.html(previewRef.current, {
+        callback: (doc) => {
+          // Save the generated PDF
+          doc.save("resume.pdf");
           setLoading(false);  // Set loading state to false when done
-        })
-        .catch((error) => {
-          console.error('Error downloading the PDF:', error);
-          setLoading(false);  // Set loading state to false in case of an error
-        });
+        },
+        margin: [0,0],  // Optional: You can add margins
+        filename: "resume.pdf",  // Filename for the saved PDF
+        autoPaging: true,  // Automatically manage pagination
+        x: 1,
+        y: 1,
+        html2canvas: {
+          scale: 0.23,  // Scale down content to fit on A4 page
+        },
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      setLoading(false);  // Set loading state to false in case of error
     }
   };
 
