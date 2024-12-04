@@ -1,16 +1,20 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useResumeContext } from "../context/appContext";
+import { saveAs } from 'file-saver';
 
 function Preview() {
   const { resume } = useResumeContext();
   const previewRef = useRef<HTMLDivElement>(null);  // Create a reference to the Preview component
-
+  const [loading, setLoading] = useState(false);  // State for loading
   
   const generatePDF = async () => {
     if (!previewRef.current) return;
 
+    setLoading(true);  // Set loading state to true when the process starts
+    
     const htmlContent = previewRef.current.innerHTML;
 
+    // Send the HTML content to the server to generate the PDF
     const response = await fetch("/api/generateResume", {
       method: "POST",
       headers: {
@@ -19,20 +23,26 @@ function Preview() {
       body: JSON.stringify({ htmlContent }),
     });
 
-    const pdfBlob = await response.blob();
-    const pdfUrl = URL.createObjectURL(pdfBlob);
+    // Get the URL of the uploaded PDF from the server
+    const { downloadUrl } = await response.json();
 
-    // Create an iframe to display the PDF directly in the page
-    const iframe = document.createElement("iframe");
-    iframe.src = pdfUrl;
-    iframe.width = "100%";
-    iframe.height = "600px"; // Adjust height as needed
-    document.body.appendChild(iframe);  // Append iframe to the body
-    // scroll down to the iframe
-    iframe.scrollIntoView({ behavior: "smooth" });
-    
+    // If the server returns a URL pointing to the hosted file, download it with FileSaver.js
+    if (downloadUrl) {
+      // Create a temporary request to fetch the file as a Blob
+      fetch(downloadUrl)
+        .then((res) => res.blob())  // Convert the response into a Blob (binary large object)
+        .then((blob) => {
+          // Use FileSaver.js to save the file, specifying the file name and extension
+          const fileName = 'resume.pdf';
+          saveAs(blob, fileName);  // FileSaver.js triggers the download
+          setLoading(false);  // Set loading state to false when done
+        })
+        .catch((error) => {
+          console.error('Error downloading the PDF:', error);
+          setLoading(false);  // Set loading state to false in case of an error
+        });
+    }
   };
-  
 
   return (
     <div>
@@ -121,9 +131,20 @@ function Preview() {
           onClick={generatePDF}
           className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md"
         >
-          Generate PDF
+          {loading ? (
+            <span>Generating PDF...</span>  // Displaying loading text
+          ) : (
+            "Generate PDF"
+          )}
         </button>
       </div>
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="flex justify-center mt-4">
+          <div className="animate-spin border-t-4 border-blue-500 border-solid rounded-full w-12 h-12"></div>  {/* Loading spinner */}
+        </div>
+      )}
     </div>
   );
 }
