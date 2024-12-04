@@ -62,7 +62,7 @@ const HorizontalStepper: React.FC = () => {
         <Button disabled={activeStep === 0} onClick={handleBack}>
           Back
         </Button>
-        <Button  onClick={handleNext}>
+        <Button  disabled={activeStep !=2} onClick={handleNext}>
           Skip
         </Button>
        

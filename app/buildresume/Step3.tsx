@@ -89,7 +89,7 @@ function Step3() {
                   <input
                     {...field}
                     type="text"
-                    placeholder="Enter Degree"
+                    placeholder="Enter Company name "
                     className={`p-3 border ${
                       errors?.experience?.[index]?.company
                         ? "border-red-500"
