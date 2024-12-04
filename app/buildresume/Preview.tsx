@@ -5,10 +5,12 @@ function Preview() {
   const { resume } = useResumeContext();
   const previewRef = useRef<HTMLDivElement>(null);  // Create a reference to the Preview component
 
+  
   const generatePDF = async () => {
     if (!previewRef.current) return;
+
     const htmlContent = previewRef.current.innerHTML;
-  
+
     const response = await fetch("/api/generateResume", {
       method: "POST",
       headers: {
@@ -16,18 +18,19 @@ function Preview() {
       },
       body: JSON.stringify({ htmlContent }),
     });
-  
+
     const pdfBlob = await response.blob();
     const pdfUrl = URL.createObjectURL(pdfBlob);
-  
-    // Trigger a download
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = "resume.pdf";
-    link.click();
-  
-    // Optionally, revoke the URL after the download to clean up
-    URL.revokeObjectURL(pdfUrl);
+
+    // Create an iframe to display the PDF directly in the page
+    const iframe = document.createElement("iframe");
+    iframe.src = pdfUrl;
+    iframe.width = "100%";
+    iframe.height = "600px"; // Adjust height as needed
+    document.body.appendChild(iframe);  // Append iframe to the body
+    // scroll down to the iframe
+    iframe.scrollIntoView({ behavior: "smooth" });
+    
   };
   
 
