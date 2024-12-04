@@ -68,7 +68,7 @@ function Step1() {
           {...register('phone', {
             required: 'Phone number is required',
             pattern: {
-              value: /^[0-9]{10}$/,
+              value: /^[0-9]{11}$/,
               message: 'Phone number must be 10 digits',
             },
           })}

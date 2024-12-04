@@ -31,8 +31,15 @@ export interface Experience {
 
 export interface Skill {
     name: string;
-    level: string;
+    level: Level;
 }
+export enum Level {
+    Beginner = 'Beginner',
+    Intermediate = 'Intermediate',
+    Advanced = 'Advanced',
+    Expert = 'Expert'
+}
+
 
 export interface Project {
     name: string;
@@ -40,17 +47,7 @@ export interface Project {
     startDate: string | null;
     endDate: string| null;
     link: string | null;
-    technologies: string[];
+    technologies: string;
 
 }
 
-export interface Language {
-    name: string;
-    level: string;
-}
-
-export interface Certification {
-    name: string;
-    date: string;
-    description: string;
-}

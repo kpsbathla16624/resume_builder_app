@@ -44,12 +44,13 @@ const HorizontalStepper: React.FC = () => {
   const { activeStep, handleNext, handleBack, handleReset } = useActiveStep();
 
   return (
-    <div className='text-white w-full h-full flex flex-col'>
+    <div className='text-white overflow-x-hidden w-full h-full flex flex-col'>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => (
           <Step key={index}>
             <StepLabel>
               <h1 className='text-white'>{label}</h1>
+              {index === 2 && <h1 className='text-white'>(optional)</h1>}
             </StepLabel>
           </Step>
         ))}
@@ -57,9 +58,12 @@ const HorizontalStepper: React.FC = () => {
       <div className='w-full h-full flex justify-center items-center'>
         <StepContent step={activeStep} />
       </div>
-      <div className="mt-4  top-[90vh] flex absolute  justify-between">
+      <div className="mt-4  top-[85vh]  px-10  flex w-full  absolute z-50    justify-between">
         <Button disabled={activeStep === 0} onClick={handleBack}>
           Back
+        </Button>
+        <Button  onClick={handleNext}>
+          Skip
         </Button>
        
       </div>

@@ -36,7 +36,15 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       },
 
     ],
-    experience: [],
+    experience: [
+      {
+        company: '',
+        position: '',
+        startDate: '',
+        endDate: '',
+        description: '',
+      },
+    ],
     skills: [],
     projects: [],
   });
