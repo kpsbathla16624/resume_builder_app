@@ -6,11 +6,8 @@ function Preview() {
   const previewRef = useRef<HTMLDivElement>(null);  // Create a reference to the Preview component
 
   const generatePDF = async () => {
-    // Get the HTML content from the previewRef
-    if (!previewRef.current) return;
     const htmlContent = previewRef.current.innerHTML;
-
-    // Send the HTML content to the API to generate PDF
+  
     const response = await fetch("/api/generateResume", {
       method: "POST",
       headers: {
@@ -18,13 +15,20 @@ function Preview() {
       },
       body: JSON.stringify({ htmlContent }),
     });
-
+  
     const pdfBlob = await response.blob();
     const pdfUrl = URL.createObjectURL(pdfBlob);
-
-    // Open the PDF in a new tab
-    window.open(pdfUrl, "_blank");
+  
+    // Trigger a download
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = "resume.pdf";
+    link.click();
+  
+    // Optionally, revoke the URL after the download to clean up
+    URL.revokeObjectURL(pdfUrl);
   };
+  
 
   return (
     <div>
