@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ResumeProvider } from "./context/appContext";
+import { ActiveStepProvider } from "./context/navigationcontext";
+import { ToastContainer } from "react-toastify";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+       <ResumeProvider>
+          <ActiveStepProvider>
         {children}
+          </ ActiveStepProvider>
+         </ResumeProvider >
       </body>
     </html>
   );
