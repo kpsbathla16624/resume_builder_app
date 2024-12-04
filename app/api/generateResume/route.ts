@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
-import puppeteer from 'puppeteer';
-
+import puppeteer from 'puppeteer-core';
+import chromium from 'chrome-aws-lambda';
 // Configure Cloudinary
 
 cloudinary.config({
@@ -13,15 +13,20 @@ export async function POST(req: NextRequest) {
   const { htmlContent } = await req.json();  // Parse the incoming JSON body
 
   try {
-    // Generate PDF from HTML content using Puppeteer
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const browser = await puppeteer.launch({
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+      });
+      const page = await browser.newPage();
     await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    const pdfBuffer = await page.pdf({
+      format: 'a4',
+      printBackground: true,
+    });
+
     await browser.close();
-    console.log(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME);
-    console.log(process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    console.log(process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET);
+ 
     
 
     // Create a promise that resolves when the PDF is uploaded to Cloudinary
