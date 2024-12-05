@@ -55,17 +55,18 @@ const HorizontalStepper: React.FC = () => {
           </Step>
         ))}
       </Stepper>
-      <div className='w-full h-full flex justify-center items-center'>
-        <StepContent step={activeStep} />
-      </div>
-      <div className="mt-4  top-[85vh]  px-10  flex w-full  absolute z-50    justify-between">
+      
+      <div className="mt-4    px-10  flex w-full   z-50    justify-between">
         <Button disabled={activeStep === 0} onClick={handleBack}>
           Back
         </Button>
-        <Button  disabled={activeStep !=2} onClick={handleNext}>
+        <Button   onClick={handleNext}>
           Skip
         </Button>
        
+      </div>
+      <div className='w-full h-full flex justify-center items-center'>
+        <StepContent step={activeStep} />
       </div>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop />
         

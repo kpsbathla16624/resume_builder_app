@@ -26,24 +26,11 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     address: '',
     summary: '',
     education: [
-      {
-        degree: '',
-        institution: '',
-        startDate: '',
-        endDate: '',
-        grade: '',
-
-      },
+      
 
     ],
     experience: [
-      {
-        company: '',
-        position: '',
-        startDate: '',
-        endDate: '',
-        description: '',
-      },
+      
     ],
     skills: [],
     projects: [],

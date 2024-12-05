@@ -1,6 +1,8 @@
+"use client";  
 import React, { useRef, useState } from "react";
 import { useResumeContext } from "../context/appContext";
 import { jsPDF } from "jspdf";
+import { useActiveStep } from "../context/navigationcontext";
 
 function Preview() {
   const { resume } = useResumeContext();
@@ -39,12 +41,38 @@ function Preview() {
       setLoading(false);  // Set loading state to false in case of error
     }
   };
+  const { activeStep, handleNext } = useActiveStep();
 
   return (
-    <div>
+    <div className={`w-full ${activeStep ===6 ? "h-full":"h-[90vh]"}  overflow-y-auto ${activeStep===6 && "max-w-4xl"} `}>
+       {/* Button to generate PDF */}
+       {
+        activeStep === 6 && 
+        <div className="my-6  text-center">
+        <button
+          onClick={generatePDF}
+          className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md"
+        >
+          {loading ? (
+            <span>Generating PDF...</span>  // Displaying loading text
+          ) : (
+            "Generate PDF"
+          )}
+        </button>
+      </div>
+      }
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="flex justify-center mt-4">
+          <div className="animate-spin border-t-4 border-blue-500 border-solid rounded-full w-12 h-12"></div>  {/* Loading spinner */}
+        </div>
+      )}
+
+
       <div
         ref={previewRef}
-        className="p-6 text-black max-w-4xl mx-auto bg-white shadow-lg rounded-lg"
+        className="p-6 text-black w-full  bg-white shadow-lg rounded-lg"
       >
         <h1 className="text-2xl font-bold text-center mb-6">Resume Preview</h1>
 
@@ -58,27 +86,32 @@ function Preview() {
         </section>
 
         {/* Summary */}
-        <section className="mb-6">
+      {resume.summary!=='' &&   <section className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Summary</h2>
           <p>{resume.summary}</p>
-        </section>
+        </section>}
 
         {/* Education */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Education</h2>
-          {resume.education.map((edu, index) => (
-            <div key={index} className="mb-4">
-              <p><strong>Institution:</strong> {edu.institution}</p>
-              <p><strong>Degree:</strong> {edu.degree}</p>
-              <p><strong>Start Date:</strong> {edu.startDate}</p>
-              <p><strong>End Date:</strong> {edu.endDate}</p>
-              <p><strong>Grade:</strong> {edu.grade}</p>
-            </div>
-          ))}
-        </section>
+       {
+        resume.education.length !== 0 
+        &&  <section className="mb-6">
+        <h2 className="text-xl font-semibold mb-4">Education</h2>
+        {resume.education.map((edu, index) => (
+          <div key={index} className="mb-4">
+            <p><strong>Institution:</strong> {edu.institution}</p>
+            <p><strong>Degree:</strong> {edu.degree}</p>
+            <p><strong>Start Date:</strong> {edu.startDate}</p>
+            <p><strong>End Date:</strong> {edu.endDate}</p>
+            <p><strong>Grade:</strong> {edu.grade}</p>
+          </div>
+        ))}
+      </section>
+       }
 
         {/* Experience */}
-        <section className="mb-6">
+        {
+          resume.experience.length!==0 && 
+          <section className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Experience</h2>
           {resume.experience.map((exp, index) => (
             <div key={index} className="mb-4">
@@ -90,57 +123,45 @@ function Preview() {
             </div>
           ))}
         </section>
+        }
 
         {/* Skills */}
+       {
+        resume.skills.length !==0 &&
         <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Skills</h2>
-          <div className="flex flex-wrap space-x-3">
-            {resume.skills.map((skill, index) => (
-              <div key={index} className="mb-2">
-                <p>{skill.name}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Projects */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Projects</h2>
-          {resume.projects.map((proj, index) => (
-            <div key={index} className="mb-4">
-              <p><strong>Name:</strong> {proj.name}</p>
-              <p><strong>Description:</strong> {proj.description}</p>
-              <p><strong>Start Date:</strong> {proj.startDate}</p>
-              <p><strong>End Date:</strong> {proj.endDate}</p>
-              {proj.link && (
-                <p><strong>Link:</strong> <a href={proj.link} target="_blank" className="text-blue-600 underline">{proj.link}</a></p>
-              )}
-              <p><strong>Technologies:</strong> {proj.technologies}</p>
+        <h2 className="text-xl font-semibold mb-4">Skills</h2>
+        <div className="flex flex-wrap space-x-3">
+          {resume.skills.map((skill, index) => (
+            <div key={index} className="mb-2">
+              <p>{skill.name}</p>
             </div>
           ))}
-        </section>
-      </div>
-
-      {/* Button to generate PDF */}
-      <div className="mt-6 text-center">
-        <button
-          onClick={generatePDF}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md"
-        >
-          {loading ? (
-            <span>Generating PDF...</span>  // Displaying loading text
-          ) : (
-            "Generate PDF"
-          )}
-        </button>
-      </div>
-
-      {/* Loading Spinner */}
-      {loading && (
-        <div className="flex justify-center mt-4">
-          <div className="animate-spin border-t-4 border-blue-500 border-solid rounded-full w-12 h-12"></div>  {/* Loading spinner */}
         </div>
-      )}
+      </section>
+       }
+
+        {/* Projects */}
+       {
+        resume.projects.length !==0
+        &&  <section className="mb-6">
+        <h2 className="text-xl font-semibold mb-4">Projects</h2>
+        {resume.projects.map((proj, index) => (
+          <div key={index} className="mb-4">
+            <p><strong>Name:</strong> {proj.name}</p>
+            <p><strong>Description:</strong> {proj.description}</p>
+            <p><strong>Start Date:</strong> {proj.startDate}</p>
+            <p><strong>End Date:</strong> {proj.endDate}</p>
+            {proj.link && (
+              <p><strong>Link:</strong> <a href={proj.link} target="_blank" className="text-blue-600 underline">{proj.link}</a></p>
+            )}
+            <p><strong>Technologies:</strong> {proj.technologies}</p>
+          </div>
+        ))}
+      </section>
+       }
+      </div>
+
+     
     </div>
   );
 }

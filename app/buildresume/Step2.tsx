@@ -62,6 +62,16 @@ function Step2() {
     }
     updateResume("education", getValues("education"));
     toast.success("Education saved successfully");
+    if (resume.experience.length === 0) {
+      const newExperience = {
+        title: "",
+        company: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+      };
+      updateResume("experience", [newExperience]);
+    }
     handleNext();
   };
 

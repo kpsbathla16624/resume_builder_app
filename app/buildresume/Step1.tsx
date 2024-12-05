@@ -6,7 +6,7 @@ import { useActiveStep } from '../context/navigationcontext';
 import { toast } from 'react-toastify';
 
 function Step1() {
-  const { resume, updateResume } = useResumeContext();
+  const { resume, updateResume, addEducation } = useResumeContext();
   const {
     register,
     handleSubmit,
@@ -24,7 +24,17 @@ function Step1() {
     
     // Show a toast message 
     toast.success('Personal info saved successfully');
-
+    if (resume.education.length === 0) {
+      const newEducation = {
+        degree: "",
+        institution: "",
+        startDate: "",
+        endDate: "",
+        grade: "",
+      };
+      addEducation(newEducation);
+      
+    }
     // Proceed to the next step
     handleNext();
   };
