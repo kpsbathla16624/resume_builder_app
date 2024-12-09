@@ -1,19 +1,24 @@
-"use client";
-import { useRouter } from "next/navigation";
+"use client"
+import React from 'react'
+import { useActiveStep } from './context/navigationcontext';
+import HorizontalStepper from './components/stepper';
+import Preview from './components/Preview';
 
 
-export default function Home() {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push("/buildresume");
-  };
-
+function page() {
+  const { activeStep, handleNext } = useActiveStep();
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <button onClick={handleClick} className="bg-blue-400 text-black p-5 rounded-3xl text-3xl">
-        Build Your Resume Now
-      </button>
+    <div className={`w-full ${activeStep !==6 ? "h-screen grid" : "h-full min-h-screen "}   grid-cols-10  pt-10 pb-10 `}>
+      <div className={` w-full h-full  ${activeStep === 6 ? "col-span-10" : " col-span-6"} `}>
+
+      <HorizontalStepper/>
+      </div>
+      <div className={`w-full col-span-4 px-2 h-full rounded-xl ${activeStep === 6 && "hidden"}`}>
+        <Preview />
+      </div>
     </div>
-  );
+  )
 }
+
+export default page
